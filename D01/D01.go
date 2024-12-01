@@ -11,7 +11,6 @@ import (
 func Solution() {
 	fmt.Println("\n--- Day 1: Historian Hysteria ---")
 
-	// check file
 	file, err := os.ReadFile("D01/input.txt")
 	if err != nil {
 		fmt.Println(err.Error())
@@ -30,8 +29,9 @@ func Solution() {
 		return
 	}
 
-	// convert to a slice of ints
 	L1, L2 := make([]int, 1000), make([]int, 1000)
+	L2Frequency := make(map[int]int)
+
 	for i, v := range res {
 		n, err := strconv.Atoi(string(v[1]))
 		if err != nil {
@@ -39,35 +39,28 @@ func Solution() {
 			return
 		}
 		L1[i] = n
-
 		n, err = strconv.Atoi(string(v[2]))
 		if err != nil {
 			fmt.Println(err.Error())
 			return
 		}
 		L2[i] = n
+		L2Frequency[L2[i]] += 1
 	}
 
-	// lowest to highest
 	slices.Sort(L1)
 	slices.Sort(L2)
 
-	L2Frequency := make(map[int]int)
-
 	total_distance := 0
+	similarity_score := 0
+
 	for i := range 1000 {
 		if L1[i] > L2[i] {
 			total_distance += L1[i] - L2[i]
 		} else {
 			total_distance += L2[i] - L1[i]
 		}
-
-		L2Frequency[L2[i]] += 1
-	}
-
-	similarity_score := 0
-	for _, v := range L1 {
-		similarity_score += v * L2Frequency[v]
+		similarity_score += L1[i] * L2Frequency[L1[i]]
 	}
 
 	fmt.Println("P1:", total_distance)
