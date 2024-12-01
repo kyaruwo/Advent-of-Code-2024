@@ -52,6 +52,8 @@ func Solution() {
 	slices.Sort(L1)
 	slices.Sort(L2)
 
+	L2Frequency := make(map[int]int)
+
 	total_distance := 0
 	for i := range 1000 {
 		if L1[i] > L2[i] {
@@ -60,7 +62,14 @@ func Solution() {
 			total_distance += L2[i] - L1[i]
 		}
 
+		L2Frequency[L2[i]] += 1
+	}
+
+	similarity_score := 0
+	for _, v := range L1 {
+		similarity_score += v * L2Frequency[v]
 	}
 
 	fmt.Println("P1:", total_distance)
+	fmt.Println("P2:", similarity_score)
 }
