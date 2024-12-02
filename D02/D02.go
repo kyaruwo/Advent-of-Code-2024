@@ -19,14 +19,14 @@ func Solution() {
 	}
 
 	file_string := string(file)
-	reports := strings.Split(file_string, "\n")
-	if len(reports) != line_count {
+	reports_string := strings.Split(file_string, "\n")
+	if len(reports_string) != line_count {
 		fmt.Println("<!> invalid input.txt")
 		return
 	}
 
-	safe := 0
-	for _, report := range reports {
+	reports := make([][]int, len(reports_string))
+	for ri, report := range reports_string {
 		levels_string := strings.Split(report, " ")
 		levels := make([]int, len(levels_string))
 
@@ -39,7 +39,15 @@ func Solution() {
 			}
 			levels[i] = n
 		}
+		reports[ri] = levels
+	}
 
+	part_one(reports)
+}
+
+func part_one(reports [][]int) {
+	safe := 0
+	for _, levels := range reports {
 		if levels[0] == levels[1] {
 			continue
 		}
@@ -51,11 +59,6 @@ func Solution() {
 
 		unsafe := false
 		for i, level := range levels[1:] {
-			if level == levels[i] {
-				unsafe = true
-				break
-			}
-
 			if all_increasing {
 				if levels[i]+4 > level && level > levels[i] {
 					continue
