@@ -3,6 +3,7 @@ package D02
 import (
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -43,41 +44,68 @@ func Solution() {
 	}
 
 	part_one(reports)
+	part_two(reports)
+}
+
+func part_two(reports [][]int) {
+	safe := 0
+
+	for _, levels := range reports {
+		if safety_check(levels) {
+			safe += 1
+			continue
+		}
+
+		for i := range len(levels) {
+			new_levels := make([]int, len(levels))
+			copy(new_levels, levels)
+			new_levels = slices.Delete(new_levels, i, i+1)
+
+			if safety_check(new_levels) {
+				safe += 1
+				break
+			}
+		}
+	}
+
+	fmt.Println("P2:", safe)
 }
 
 func part_one(reports [][]int) {
 	safe := 0
+
 	for _, levels := range reports {
-		if levels[0] == levels[1] {
-			continue
+		if safety_check(levels) {
+			safe += 1
 		}
-
-		all_increasing := false
-		if levels[0] < levels[1] {
-			all_increasing = true
-		}
-
-		unsafe := false
-		for i, level := range levels[1:] {
-			if all_increasing {
-				if levels[i]+4 > level && level > levels[i] {
-					continue
-				}
-			} else {
-				if levels[i]-4 < level && level < levels[i] {
-					continue
-				}
-			}
-
-			unsafe = true
-			break
-		}
-
-		if unsafe {
-			continue
-		}
-		safe += 1
 	}
 
 	fmt.Println("P1:", safe)
+}
+
+func safety_check(levels []int) bool {
+	all_increasing := false
+	if levels[0] < levels[1] {
+		all_increasing = true
+	}
+
+	if levels[0] == levels[1] {
+		return false
+	}
+
+	for i, level := range levels[1:] {
+		if all_increasing {
+			if levels[i]+4 > level && level > levels[i] {
+				continue
+			}
+		} else {
+			if levels[i]-4 < level && level < levels[i] {
+				continue
+			}
+		}
+
+		return false
+	}
+
+	return true
 }
